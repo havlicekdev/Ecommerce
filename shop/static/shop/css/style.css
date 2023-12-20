@@ -1,0 +1,118 @@
+/* customization */
+
+body{
+    background-color: #E6E6E6;
+    color: #404040;
+}
+
+.hp-margin-top-content{
+    margin-top: 100px;
+}
+
+#search-container{
+    background-color: white;
+}
+
+.card-text{
+    color: #808080;
+    font-weight: 200;
+}
+
+.hp-card-product{
+    min-height: 470px;
+}
+
+.card-title{
+    font-weight: 500;
+}
+
+.hp-cart-item-img{
+    max-width: 70px;
+}
+
+.hp-modal-dialog{
+    pointer-events: all;
+}
+
+.hp-users-profile-image{
+    max-width: 200px;
+
+}
+
+/* /customization */
+
+/* Transition underline link */
+
+.hp-link-div {
+  position: relative;
+  color: #000;
+  text-decoration: none;
+}
+
+.hp-link-div-active {
+  border-bottom: 2px solid gold;
+}
+
+.hp-link-div:hover {
+  color: #000;
+}
+
+.hp-link-div::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: gold;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.hp-link-div:hover::before {
+  transform: scaleX(1);
+}
+
+/* /Transition underline link */
+
+
+/* Transition underline link: transition: direction from left */
+
+.hp-link-div-footer {
+  position: relative;
+  color: #000;
+  text-decoration: none;
+}
+
+.hp-link-div-footer-active {
+
+  color: goldenrod;
+  border-bottom: 2px solid gold;
+}
+
+.hp-link-div-footer:hover {
+  color: #000;
+}
+
+/* Animate the line from the left */
+.hp-link-div-footer::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: gold;
+  transform: scaleX(0);
+  transform-origin: top left;
+  transition: transform 0.3s ease;
+}
+
+
+.hp-link-div-footer:hover::before {
+  transform: scaleX(1);
+}
+
+/* /Transition underline link: transition: direction from left */

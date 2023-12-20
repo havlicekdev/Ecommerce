@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'shop/bootstrap/css/bootstrap.min.css' %}" type = "text/css"/>
+    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}" type="text/css">
+    <script src="{% static 'shop/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'shop/jquery/jquery.min.js' %}"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Ecommerce site: shop</title>
+    <meta name="author" content="Ing. Petr Havlíček: https://github.com/havlicekdev">
+</head>
+<body>
+
+<!-- header -->
+{% include "header.html" %}
+<!-- /header -->
+
+<!-- content -->
+<div class="content hp-margin-top-content">
+
+    <!-- messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <!-- /messages -->
+
+    <!-- block content -->
+    {% block content %}
+
+    {% endblock %}
+    <!-- /block content -->
+
+</div>
+<!-- /content -->
+
+<!-- footer -->
+{% include "footer.html" %}
+<!-- /footer -->
+
+</body>
+
+<!-- sessionCart add -->
+<script>
+    $(document).on('click','.hp-btn-add-to-cart', function(e){
+       e.preventDefault();
+
+       console.log("new clicked");
+       let val = this.value.toString();
+       let id = this.id.toString();
+
+       $.ajax({
+            type: 'POST',
+            url:  '{% url 'cart_add' %}',
+            data: {
+                product_id: id,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+
+            success: function (json){
+                console.log(JSON.qty)
+                document.getElementById("hp-cart-quantity").textContent = json.cart_quantity
+
+            },
+
+            error: function (xhr, errmsg, err){
+            }
+       });
+    });
+</script>
+<!-- /sessionCart add -->
+
+<!-- delete sessionCart -->
+<script>
+    $(document).on('click','.hp-btn-delete-cart', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            type: 'POST',
+            url:  '{% url 'cart_delete' %}',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+
+            success: function (json){
+                console.log(JSON.qty)
+                document.getElementById("hp-cart-quantity").textContent = json.qty
+                document.getElementById("hp-cart-status").textContent = "Nákupní košík je prázdný!"
+                document.getElementById("hp-btn-vysypat-kosik").innerHTML = ""
+                document.getElementById("cart-quantity").innerHTML = ""
+                document.getElementById("hp-btn-objednat").innerHTML = ""
+
+            },
+
+            error: function (xhr, errmsg, err){
+            }
+       });
+    });
+</script>
+<!-- /delete sessionCart -->
+
+<!-- addCartModal url redirect -->
+<script>
+    $(document).on('click','.hp-modal-to-cart-redirect', function(e) {
+        e.preventDefault();
+
+        window.location.href = "{% url 'cart' %}";
+    });
+</script>
+<!-- /addCartModal url redirect -->
+
+</html>

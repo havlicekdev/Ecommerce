@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="jumbotron jumbotron-fluid mb-5">
+    <div class="container">
+        <h1 class="display-4">Kontakty</h1>
+        <p class="lead">Tech Stack: Django, Django Rest Framework, Bootstrap 5, jQuery, Ajax</p>
+    </div>
+</div>
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Kontaktní formulář</legend>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Jméno a příjmení</label>
+                        <input class="form-control mb-3" type="text" id="name" name="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Váš email</label>
+                        <input class="form-control mb-3" type="email" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Váše zpráva</label>
+                        <textarea class="form-control mb-3" id="message" name="message"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <button class="form-control btn btn-primary">Odeslat</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-md-6">
+            Company, s.r.o.<br>
+            Adresní 123<br>
+            110 00 Praha 1
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="jumbotron jumbotron-fluid mb-5">
+    <div class="container">
+        <h1 class="display-4">Košík</h1>
+        <p class="lead">Tech Stack: Django, Django Rest Framework, Bootstrap 5, jQuery, Ajax</p>
+    </div>
+</div>
+    <div class="container mb-5">
+        {% if cart_products %}
+            <div class="row">
+            <div class="col-md-12 mb-5" id="hp-cart-status">
+                {% for product in cart_products %}
+                    <div class="row mb-5">
+                        <div class="col-md-1">
+                            <img src="{{ product.image }}" class="hp-cart-item-img"  alt="{{ product.title }}">
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                Název produktu:
+                            </div>
+                            {{ product.title }}
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                Popis produktu:
+                            </div>
+                            {{ product.description }}
+                        </div>
+                        <div class="col-md-1">
+                            <div>
+                                Cena/ks:
+                            </div>
+                            {{ product.price }} Kč
+                        </div>
+                        <div class="col-md-2">
+                            {% for key,value in session_cart.items %}
+                                {% if key == product.id|slugify %}
+                                    <div class="mb-3">
+                                        <label for="{{ key }}" class="form-label">Počet ks:</label>
+                                        <div class="input-group mb-3">
+                                            <button class="btn btn-danger" type="button" onclick="decQty({{ key }})">-</button>
+                                            <input type="text" class="form-control" id="item-{{ key }}" value="{{ value }}">
+                                            <button class="btn btn-success" type="button" onclick="incQty({{ key }})">+</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div>
+                                            Celková cena položky:
+                                        </div>
+                                        <div id="item-price-{{ key }}">
+                                            {% widthratio product.price 1 value %} Kč
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <form method="POST" action="{% url 'cart_remove_item' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" id="remove-item-id" name="remove-item-id" value="{{ key }}">
+                                            <button class="btn btn-warning">Odebrat</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="row mb-4">
+                    <div class="col-md-9" id="cart-quantity">
+                        V KOŠÍKU JE CELKEM: {{ cart_quantity }} PRODUKTŮ
+                    </div>
+                    <div class="col-md-2 text-md-end" id="total-price">
+                        CELKOVÁ CENA: {{ cart_total_price }} Kč
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col id="hp-btn-vysypat-kosik"">
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#emptyCartModal">
+                                Vysypat košík
+                            </button>
+                        </div>
+                        <div class="col-auto" id="hp-btn-objednat">
+                            <form method="POST" action="{% url 'checkout' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-primary" type="submit">Objednat nákup</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-md-12">
+                    Nákupní košík je prázdný!<br>
+                    Pojďme <a href="{% url 'index' %}">nakupovat!</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- cart modals -->
+        <div class="modal" tabindex="-1" id="emptyCartModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Vysypat košík?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Přejete si vysypat košík?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít</button>
+                        <button type="button" class="btn btn-danger hp-btn-delete-cart" data-bs-dismiss="modal">Vysypat košík</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /cart modals -->
+
+    <!-- cart scripts -->
+    <script>
+        function incQty(id){
+            console.log(id)
+            this.id = id.toString()
+
+            $.ajax({
+                type: 'POST',
+                url:  '{% url 'cart_add' %}',
+                data: {
+                    product_id: this.id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+
+                success: function (json){
+                document.getElementById("hp-cart-quantity").textContent = json.cart_quantity
+                document.getElementById("item-"+id).value = json.qty
+                document.getElementById("item-price-"+id).innerHTML = json.item_price+" Kč"
+                document.getElementById("total-price").innerHTML = "CELKOVÁ CENA: "+json.total_price+" Kč"
+                document.getElementById("cart-quantity"). innerHTML = "V KOŠÍKU JE CELKEM: "+json.cart_quantity+" PRODUKTŮ."
+                },
+
+                error: function (xhr, errmsg, err){
+                }
+            });
+        }
+    </script>
+    <script>
+        function decQty(id){
+            console.log(id)
+            this.id = id.toString()
+
+            $.ajax({
+                type: 'POST',
+                url:  '{% url 'cart_dec' %}',
+                data: {
+                    product_id: this.id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+
+                success: function (json){
+                document.getElementById("hp-cart-quantity").textContent = json.cart_quantity
+                document.getElementById("item-"+id).value = json.qty
+                document.getElementById("item-price-"+id).innerHTML = json.item_price+" Kč"
+                document.getElementById("total-price").innerHTML = "CELKOVÁ CENA: "+json.total_price+" Kč"
+                document.getElementById("cart-quantity"). innerHTML = "V KOŠÍKU JE CELKEM: "+json.cart_quantity+" PRODUKTŮ."
+                },
+
+                error: function (xhr, errmsg, err){
+                }
+            });
+        }
+    </script>
+    <!-- /cart scripts -->
+
+{% endblock %}

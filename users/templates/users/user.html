@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block content %}
+
+<div class="jumbotron jumbotron-fluid mb-5">
+    <div class="container">
+        <h1 class="display-4">Profil přihlášeného uživatele</h1>
+        <p class="lead">Tech Stack: Django, Django Rest Framework, Bootstrap 5, jQuery, Ajax</p>
+    </div>
+</div>
+
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{ user.profile.image.url }}" alt="" class="hp-users-profile-image">
+        </div>
+        <div class="col-md-6">
+            <h3>{{ user.get_short_name }}</h3>
+                <ul>
+                    <li>
+                        Přihlášený uživatel: {{ user.get_full_name }}
+                    </li>
+                    <li>
+                        Login uživatele: {{ user.username }}
+                    </li>
+                    <li>
+                        ID uživatele: {{ user.id }}
+                    </li>
+                    <li>
+                        Email uživatele: {{ user.email }}
+                    </li>
+                    <li>
+                        Session platná od: {{ user.last_login }}
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <form id="logout-form" method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Odhlásit</button>
+                </form>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

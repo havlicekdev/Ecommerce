@@ -1,0 +1,87 @@
+<!-- header -->
+{% load static %}
+<nav class="navbar fixed-top navbar-expand-lg bg-body-tertiary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'index' %}">
+            <img src="{% static 'shop/img/bootstrap-logo.svg' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                Ecommerce
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link {% if 'home' in request.path %}hp-link-div-active{% else %}hp-link-div{% endif %}" aria-current="page" href="{% url 'index' %}">Hlavní strana</a>
+                <a class="nav-link {% if 'products' in request.path %}hp-link-div-active{% else %}hp-link-div{% endif %}" aria-current="page" href="{% url 'products' %}">Produkty</a>
+                <a class="nav-link {% if 'about' in request.path %}hp-link-div-active{% else %}hp-link-div{% endif %}" href="{% url 'about' %}">O nás</a>
+                <a class="nav-link {% if 'contact' in request.path %}hp-link-div-active{% else %}hp-link-div{% endif %}" href="{% url 'contact' %}">Kontakt</a>
+            </div>
+
+            <div class="navbar-nav d-lg-none d-xs-flex d-sm-flex d-md-flex">
+                <form class="row mt-5" role="search">
+                    <div class="col">
+                        <input type="text form-control mt-3" name="item_name" placeholder="Najít produkt">
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary">Hledat</button>
+                    </div>
+                </form>
+
+                <div class="row mt-3 mb-3" role="button">
+                    <div class="col">
+                        <a href="{% url 'user' %}" class="btn btn-secondary">
+                            Uživatel
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-3" role="button">
+                    <div class="col">
+                        <a href="{% url 'cart' %}" class="hp-cart-button btn btn-warning">
+                            Košík
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-none d-xs-none d-sm-none d-lg-flex">
+            <form class="d-none d-xs-none d-sm-none d-md-none d-lg-flex" role="search" method="POST" action="{% url 'search' %}">
+                {% csrf_token %}
+                <input class="form-control me-2" id="item_name" name="item_name" type="search" placeholder="Najít produkt" aria-label="Search">
+                <button class="btn btn-primary" type="submit">Hledat</button>
+            </form>
+
+            <div class="d-none d-xs-none d-sm-none d-md-none d-lg-flex ms-md-2" role="button">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'user' %}" class="btn btn-success">
+                        Uživatel
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-success">
+                        Přihlásit
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="d-none d-xs-none d-sm-none d-md-none d-lg-flex ms-md-2" role="button">
+                <a href="{% url 'cart' %}" class="btn btn-warning position-relative">
+                    Košík
+                    <span class="d-inline id="hp-cart-badge">
+                        <span id="" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            <span class="visually-hidden">produktů v košíku</span>
+                                <span class="" id="hp-cart-quantity">
+                                    {% if cart_quantity > 0  %}
+                                        {{ cart_quantity }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </span>
+                        </span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- /header -->

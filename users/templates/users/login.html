@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="jumbotron jumbotron-fluid mb-5">
+    <div class="container">
+        <h1 class="display-4">Login</h1>
+        <p class="lead">Tech Stack: Django, Django Rest Framework, Bootstrap 5, jQuery, Ajax</p>
+    </div>
+</div>
+
+<div class="container mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group mb-2">
+                        {{ field.name }}
+                        <br>
+                        {{ field  }}
+                    </div>
+                {% endfor %}
+                <button class="btn btn-primary" type="submit">Přihlásit</button>
+            </form>
+        </div>
+        <div class="col-md-12 mt-3">
+            <a href="{% url 'user_register' %}">
+                Registrace nového uživatele
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

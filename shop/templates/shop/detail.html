@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="jumbotron jumbotron-fluid mb-5">
+        <div class="container">
+            <h1 class="display-4">Detail produktu: {{ detail_object.title }}</h1>
+            <p class="lead">Tech Stack: Django, Django Rest Framework, Bootstrap 5, jQuery, Ajax</p>
+        </div>
+    </div>
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-2">
+                <button id="{{ detail_object.id }}" class="btn btn-primary d-inline hp-btn-add-to-cart" data-bs-toggle="modal" data-bs-target="#addCartModal">Přidat do košíku</button>
+            </div>
+            <div class="col-md-10">
+                <ul>
+                    <li>
+                        Produkt: {{ detail_object.title }}
+                    </li>
+                    <li>
+                        Detailní informace: {{ detail_object.description }}
+                    </li>
+                    <li>
+                        Cena: {{ detail_object.price }} Kč
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-12">
+                <img src="{{ detail_object.image }}" alt="{{ detail_object.title }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- cart modals -->
+    <div class="modal" tabindex="-1" id="addCartModal">
+        <div class="modal-dialog modal-dialog-centered hp-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Produkt byl přidán do košíku</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Přejete si přejít do košíku nebo nadále nakupovat?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Pokračovat v nákupu</button>
+                    <a href="{% url 'cart' %}" type="button" class="btn btn-primary hp-modal-to-cart-redirect" data-bs-dismiss="modal">Přejít do košíku</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /cart modals -->
+
+{% endblock %}
