@@ -41,18 +41,18 @@
 - RestAPI: Neimplementováno. Omezeno pouze pro čtení metodou GET.
 
 # Email rozhraní
-- aplikace používá s automatickému zasílání potvrzovacích emailových zpráv:
+- aplikace používá k automatickému zasílání potvrzovacích emailových zpráv:
 
 - účet na Gmail.com
 - SSL zabezpečení
-- Odesílá potvrzení objednávky
-- Odesílá kontaktní emailový formulář
+- odesílá potvrzení objednávky
+- odesílá kontaktní emailový formulář
 
 # Nákupní košík
 - v session se ukládá pouze id produktu a množství nakupované položky
 - všechny výpočty jsou prováděny pouze na straně serveru. Uživatel k těmto hodnotám nemá přístup.
 - změny v nákupním košíku jsou prováděny pouze na straně serveru a ukládány v objektu Cart. Změny jsou zasílány na server pomocí AJAX metody POST, následně provedena změna v objektu Cart a odpověď je aktualizována na stránce ihned pomocí Javascriptu.
-- persistence obsahu košíku je zajištěna po celou dobu platnosti konkrétní session. Ceny jsou aktulizovány vždy podle platné ceny ze strany serveru.
+- persistence obsahu košíku je zajištěna po celou dobu platnosti konkrétní session. Ceny jsou aktualizovány vždy podle platné ceny ze strany serveru.
 
 # Katalog produktů
 - katalog je zpracován pomocí Bootstrap karet
@@ -71,19 +71,19 @@
 
 # Možnosti rozšíření
 - RestAPI - kompletní RestAPI pro využití frontendu (React, Angular, Vue) a mobilních aplikací
-- Zabezpečení RestAPI prostřednictvím JWT
-- Autentifikace a Autorizace prostřednictvím třetích stran (OAuth2, Bankovní identita)
-- Dvoufázové ověření přihlášení
-- Profesionální HTML šablona
+- zabezpečení RestAPI prostřednictvím JWT
+- autentifikace a autorizace prostřednictvím třetích stran (OAuth2, Bankovní identita)
+- dvoufázové ověření přihlášení
+- profesionální HTML šablona
 
 # Admin
 - /admin
 - pro testovací účely je k dispozici účet: admin/admin
-- Lze administrovat uživatele eshopu
-- Lze administrovat produkty eshopu
-- Lze administrovat objednávky a jednotlivé položky objednávky
-- U objednávek lze měnit stav dle vytvořeného ENUM: Přijato, Zaplaceno, Odesláno, Fakturováno
-- Je ukládána kopie odeslaných zpráv prostřednictvím emailového formuláře (/contact)
+- lze administrovat uživatele eshopu
+- lze administrovat produkty eshopu
+- lze administrovat objednávky a jednotlivé položky objednávky
+- u objednávek lze měnit stav dle vytvořeného ENUM: Přijato, Zaplaceno, Odesláno, Fakturováno
+- je ukládána kopie odeslaných zpráv prostřednictvím emailového formuláře (/contact)
 
 # Tech Stack
 Django 5.0
