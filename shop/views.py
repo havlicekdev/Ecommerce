@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
 
 from .cart import Cart
 from .email import Email
@@ -10,12 +11,18 @@ from shop.checkout import Checkout
 
 
 # root app entry
-def root(request):
-    response = redirect('index')
-    return response
+class Root(View):
+    def __init__(self, **kwargs):
+        super().__init__(kwargs)
+        self.response = None
+
+    def get(self, request):
+        self.response = redirect('index')
+        return self.response
 
 
 # searching products
+"""
 def search(request):
     the_cart = Cart(request)
     cart_quantity = the_cart.get_quantity()
@@ -40,6 +47,38 @@ def search(request):
             'item_name': item_name,
             'cart_quantity': cart_quantity
         })
+
+"""
+
+
+class Search(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(kwargs)
+        self.item_name = None
+        self.found_objects = None
+        self.cart_quantity = None
+        self.the_cart = None
+
+    def post(self, request):
+        self.the_cart = Cart(request)
+        self.cart_quantity = self.the_cart.get_quantity()
+
+        self.item_name = request.POST.get('item_name')
+        if self.item_name != '' and self.item_name is not None:
+            self.found_objects = Product.objects.filter(title__icontains=self.item_name)
+
+        else:
+            self.item_name = "Nebyl zadán žádný vyhledávaný text!"
+
+        return render(
+            request,
+            'shop/search.html',
+            {
+                'found_objects': self.found_objects,
+                'item_name': self.item_name,
+                'cart_quantity': self.cart_quantity
+            })
 
 
 # home page
@@ -119,7 +158,6 @@ def about(request):
 
 # contact page
 def contact(request):
-
     # processing the email form
     if request.method == "POST":
         name = request.POST.get('name', "")
