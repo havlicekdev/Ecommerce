@@ -10,32 +10,37 @@ from django.contrib import messages
 from shop.checkout import Checkout
 
 
-# root app entry
+# root app entry: redirect to index
 class RootView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.response = None
 
+    # redirect
     def get(self, request):
-        self.response = redirect('index')
-        return self.response
+        return redirect('index')
 
 
-# searching products
+# search the product
 class SearchView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.item_name = None
         self.found_objects = None
         self.cart_quantity = None
-        self.the_cart = None
 
+    # form processing
     def post(self, request):
-        self.the_cart = Cart(request)
-        self.cart_quantity = self.the_cart.get_quantity()
 
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
+
+        # get found object as QuerySet
         self.item_name = request.POST.get('item_name')
         if self.item_name != '' and self.item_name is not None:
             self.found_objects = Product.objects.filter(title__icontains=self.item_name)
@@ -43,6 +48,7 @@ class SearchView(View):
         else:
             self.item_name = "Nebyl zadán žádný vyhledávaný text!"
 
+        # return
         return render(
             request,
             'shop/search.html',
@@ -56,17 +62,22 @@ class SearchView(View):
 # home page
 class IndexView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.product_objects = None
         self.page = None
         self.paginator = None
         self.cart_quantity = None
-        self.the_cart = None
 
+    # get
     def get(self, request):
-        self.the_cart = Cart(request)
-        self.cart_quantity = self.the_cart.get_quantity()
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
+
+        # get all products as QuerySet
         self.product_objects = Product.objects.all()
 
         # pagination code
@@ -74,6 +85,7 @@ class IndexView(View):
         self.page = request.GET.get('page')
         self.product_objects = self.paginator.get_page(self.page)
 
+        # return
         return render(
             request,
             'shop/index.html',
@@ -86,17 +98,22 @@ class IndexView(View):
 # products catalog -> list of products
 class ProductsView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.product_objects = None
         self.page = None
         self.paginator = None
         self.cart_quantity = None
-        self.the_cart = None
 
+    # get
     def get(self, request):
-        self.the_cart = Cart(request)
-        self.cart_quantity = self.the_cart.get_quantity()
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
+
+        # get all products as QuerySet
         self.product_objects = Product.objects.all()
 
         # pagination code
@@ -104,6 +121,7 @@ class ProductsView(View):
         self.page = request.GET.get('page')
         self.product_objects = self.paginator.get_page(self.page)
 
+        # return
         return render(
             request,
             'shop/products.html',
@@ -116,21 +134,27 @@ class ProductsView(View):
 # products catalog -> particular product detail
 class DetailView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.item_id = None
         self.cart_quantity = None
-        self.the_cart = None
         self.detail_object = None
 
+    # get
     def get(self, request, id):
-        self.the_cart = Cart(request)
-        self.cart_quantity = self.the_cart.get_quantity()
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
+
+        # get particular product as QuerySet
         self.item_id = id
 
         if self.item_id != '' and self.item_id is not None:
             self.detail_object = Product.objects.get(id=self.item_id)
 
+        # return
         return render(
             request,
             'shop/detail.html',
@@ -143,15 +167,19 @@ class DetailView(View):
 # about us page
 class AboutView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.cart_quantity = None
-        self.the_cart = None
 
+    # get
     def get(self, request):
-        self.the_cart = Cart(request)
-        self.cart_quantity = self.the_cart.get_quantity()
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
 
+        # return
         return render(
             request,
             'shop/about.html',
@@ -163,6 +191,7 @@ class AboutView(View):
 # contact page
 class ContactView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.send_email = None
@@ -171,15 +200,18 @@ class ContactView(View):
         self.email = None
         self.name = None
 
+    # get
     def get(self, request):
+        # return
         return render(
             request,
             'shop/contact.html',
             {}
         )
 
+    # post
     def post(self, request):
-        # processing the email form
+        # the email form processing
         self.name = request.POST.get('name', "")
         self.email = request.POST.get('email', "")
         self.message = request.POST.get('message', "")
@@ -195,6 +227,7 @@ class ContactView(View):
         # success message
         messages.success(request, "Váš email byl odeslán!")
 
+        # return
         return render(
             request,
             'shop/contact.html',
@@ -205,21 +238,31 @@ class ContactView(View):
 # cart page
 class CartView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.session_cart = None
         self.cart_total_price = None
         self.cart_quantity = None
         self.cart_products = None
-        self.my_cart = None
 
+    # get
     def get(self, request):
-        self.my_cart = Cart(request)
-        self.cart_products = self.my_cart.get_products()
-        self.cart_quantity = self.my_cart.get_quantity()
-        self.cart_total_price = self.my_cart.get_total_price()
-        self.session_cart = self.my_cart.get_session_cart()
+        # get session cart
+        self.session_cart = self.cart.get_session_cart()
 
+        # cart quantity for the cart badge
+        self.cart = Cart(request)
+        self.cart_quantity = self.cart.get_quantity()
+
+        # get all products in the cart
+        self.cart_products = self.cart.get_products()
+
+        # get cart total price
+        self.cart_total_price = self.cart.get_total_price()
+
+        # return
         return render(
             request,
             'shop/cart.html',
@@ -235,22 +278,27 @@ class CartView(View):
 # delete all products prom the cart using AJAX
 class CartDeleteAjax(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.response = None
-        self.my_cart = None
 
+    # get
     def post(self, request):
-        # AJAX request
-        self.my_cart = Cart(request)
-        self.my_cart.delete(request)
+        # AJAX request processing
+        self.cart = Cart(request)
+        self.cart.delete(request)
         self.response = JsonResponse({'qty': 0})
+
+        # response
         return self.response
 
 
 # add product into the cart or increment quantity of particular product in the cart - using AJAX
 class CartAddAjax(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.cart_quantity = None
@@ -259,10 +307,11 @@ class CartAddAjax(View):
         self.product_id = None
         self.my_cart = None
 
+    # post
     def post(self, request):
         self.my_cart = Cart(request)
 
-        # AJAX request
+        # AJAX request processing
         self.product_id = int(request.POST.get('product_id'))
         self.product = get_object_or_404(Product, id=self.product_id)
         self.item_qty = self.my_cart.add(product=self.product)
@@ -270,6 +319,7 @@ class CartAddAjax(View):
         item_price = self.product.price * self.item_qty
         total_price = self.my_cart.get_total_price()
 
+        # response
         response = JsonResponse(
             {'qty': self.item_qty, 'item_price': item_price, 'total_price': total_price,
              "cart_quantity": self.cart_quantity})
@@ -279,20 +329,22 @@ class CartAddAjax(View):
 # decrement quantity of particular item in the cart using AJAX
 class CartDecAjax(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.total_price = None
         self.item_price = None
         self.cart_quantity = None
         self.item_qty = None
         self.product = None
         self.product_id = None
-        self.my_cart = None
 
+    # post
     def post(self, request):
-        self.my_cart = Cart(request)
+        self.cart = Cart(request)
 
-        # AJAX request
+        # AJAX request processing
         self.product_id = int(request.POST.get('product_id'))
         self.product = get_object_or_404(Product, id=self.product_id)
         self.item_qty = self.my_cart.dec(product=self.product)
@@ -300,6 +352,7 @@ class CartDecAjax(View):
         self.item_price = self.product.price * self.item_qty
         self.total_price = self.my_cart.get_total_price()
 
+        # response
         response = JsonResponse(
             {'qty': self.item_qty, 'item_price': self.item_price, 'total_price': self.total_price,
              "cart_quantity": self.cart_quantity})
@@ -309,18 +362,22 @@ class CartDecAjax(View):
 # delete particular product from the cart
 class CartRemoveItemView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.my_cart = None
+        self.cart = None
         self.my_id = None
 
+    # post
     def post(self, request):
+        # get product id to delete
         self.my_id = request.POST.get('remove-item-id', "")
 
         # delete particular item from cart
-        self.my_cart = Cart(request)
-        self.my_cart.remove_cart_item(request, self.my_id)
+        self.cart = Cart(request)
+        self.cart.remove_cart_item(request, self.my_id)
 
+        # response
         response = redirect('cart')
         return response
 
@@ -328,39 +385,41 @@ class CartRemoveItemView(View):
 # shop checkout
 class CheckoutView(View):
 
+    # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.send_email = None
+        self.db_message = None
         self.checkout_email_message = None
         self.message = None
-        self.db_message = None
         self.total_order_price = None
-        self.the_session_cart = None
-        self.the_user_id = None
-        self.the_user = None
-        self.the_checkout = None
-        self.the_cart = None
-        self.the_user_logged_in = None
+        self.session_cart = None
+        self.user_id = None
+        self.user = None
+        self.user_logged_in = None
+        self.checkout = None
+        self.cart = None
 
+    # post
     def post(self, request):
-        self.the_user_logged_in = "logged_out"
-        self.the_cart = Cart(request)
-        self.the_checkout = Checkout(request)
+        self.user_logged_in = "logged_out"
+        self.cart = Cart(request)
+        self.checkout = Checkout(request)
 
         # check if user is logged-in (only logged-in user can make new order)
         if request.user.is_authenticated:
-            self.the_user_logged_in = "logged_in"
-            self.the_user = request.user
-            self.the_user_id = self.the_user.id
+            self.user_logged_in = "logged_in"
+            self.user = request.user
+            self.user_id = self.user.id
 
-            self.the_session_cart = self.the_checkout.get_session_cart()
-            self.the_checkout.set_order()
+            self.session_cart = self.checkout.get_session_cart()
+            self.checkout.set_order()
 
-            self.total_order_price = self.the_cart.get_total_price()
+            self.total_order_price = self.cart.get_total_price()
 
             # set up the email message - conformation of order
             self.message = "Dobrý den,\nděkujeme za Vaši objednávku.\n\n"
-            self.checkout_email_message = self.the_checkout.get_order_email_confirmation_message()
+            self.checkout_email_message = self.checkout.get_order_email_confirmation_message()
 
             for key, value in self.checkout_email_message.items():
                 for key, value in value.items():
@@ -383,7 +442,7 @@ class CheckoutView(View):
             self.message += "CELKOVÁ CENA OBJEDNÁVKY: " + str(self.total_order_price) + " Kč"
 
             # empty the cart after successfully made new order
-            self.the_checkout.delete_cart(request)
+            self.checkout.delete_cart(request)
 
             # email save
             self.db_message = Message(name=self.the_user, email=self.the_user.email, message=self.message)
@@ -395,9 +454,10 @@ class CheckoutView(View):
                                  body=self.message)
 
         else:
-            # if user is NOT logged-in -> login
+            # if user is NOT logged-in -> redirect to login
             return redirect('login')
 
+        # return
         return render(
             request,
             'shop/checkout.html',
