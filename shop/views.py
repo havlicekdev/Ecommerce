@@ -11,9 +11,10 @@ from shop.checkout import Checkout
 
 
 # root app entry
-class Root(View):
+class RootView(View):
+
     def __init__(self, **kwargs):
-        super().__init__(kwargs)
+        super().__init__(**kwargs)
         self.response = None
 
     def get(self, request):
@@ -22,39 +23,10 @@ class Root(View):
 
 
 # searching products
-"""
-def search(request):
-    the_cart = Cart(request)
-    cart_quantity = the_cart.get_quantity()
-
-    found_objects = None
-    item_name = None
-
-    if request.method == "POST":
-        item_name = request.POST.get('item_name')
-
-        if item_name != '' and item_name is not None:
-            found_objects = Product.objects.filter(title__icontains=item_name)
-
-        else:
-            item_name = "Nebyl zadán žádný vyhledávaný text!"
-
-    return render(
-        request,
-        'shop/search.html',
-        {
-            'found_objects': found_objects,
-            'item_name': item_name,
-            'cart_quantity': cart_quantity
-        })
-
-"""
-
-
-class Search(View):
+class SearchView(View):
 
     def __init__(self, **kwargs):
-        super().__init__(kwargs)
+        super().__init__(**kwargs)
         self.item_name = None
         self.found_objects = None
         self.cart_quantity = None
@@ -82,239 +54,354 @@ class Search(View):
 
 
 # home page
-def index(request):
-    the_cart = Cart(request)
-    cart_quantity = the_cart.get_quantity()
+class IndexView(View):
 
-    product_objects = Product.objects.all()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.product_objects = None
+        self.page = None
+        self.paginator = None
+        self.cart_quantity = None
+        self.the_cart = None
 
-    # pagination code
-    paginator = Paginator(product_objects, 10)
-    page = request.GET.get('page')
-    product_objects = paginator.get_page(page)
+    def get(self, request):
+        self.the_cart = Cart(request)
+        self.cart_quantity = self.the_cart.get_quantity()
+        self.product_objects = Product.objects.all()
 
-    return render(
-        request,
-        'shop/index.html',
-        {
-            'product_objects': product_objects,
-            'cart_quantity': cart_quantity
-        })
+        # pagination code
+        self.paginator = Paginator(self.product_objects, 10)
+        self.page = request.GET.get('page')
+        self.product_objects = self.paginator.get_page(self.page)
+
+        return render(
+            request,
+            'shop/index.html',
+            {
+                'product_objects': self.product_objects,
+                'cart_quantity': self.cart_quantity
+            })
 
 
 # products catalog -> list of products
-def products(request):
-    the_cart = Cart(request)
-    cart_quantity = the_cart.get_quantity()
+class ProductsView(View):
 
-    product_objects = Product.objects.all()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.product_objects = None
+        self.page = None
+        self.paginator = None
+        self.cart_quantity = None
+        self.the_cart = None
 
-    # pagination code
-    paginator = Paginator(product_objects, 4)
-    page = request.GET.get('page')
-    product_objects = paginator.get_page(page)
+    def get(self, request):
+        self.the_cart = Cart(request)
+        self.cart_quantity = self.the_cart.get_quantity()
+        self.product_objects = Product.objects.all()
 
-    return render(
-        request,
-        'shop/products.html',
-        {
-            'product_objects': product_objects,
-            'cart_quantity': cart_quantity
-        })
+        # pagination code
+        self.paginator = Paginator(self.product_objects, 4)
+        self.page = request.GET.get('page')
+        self.product_objects = self.paginator.get_page(self.page)
+
+        return render(
+            request,
+            'shop/products.html',
+            {
+                'product_objects': self.product_objects,
+                'cart_quantity': self.cart_quantity
+            })
 
 
 # products catalog -> particular product detail
-def detail(request, id):
-    the_cart = Cart(request)
-    cart_quantity = the_cart.get_quantity()
+class DetailView(View):
 
-    detail_object = None
-    item_id = id
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.item_id = None
+        self.cart_quantity = None
+        self.the_cart = None
+        self.detail_object = None
 
-    if item_id != '' and item_id is not None:
-        detail_object = Product.objects.get(id=item_id)
+    def get(self, request, id):
+        self.the_cart = Cart(request)
+        self.cart_quantity = self.the_cart.get_quantity()
+        self.item_id = id
 
-    return render(
-        request,
-        'shop/detail.html',
-        {
-            'detail_object': detail_object,
-            'cart_quantity': cart_quantity
-        })
+        if self.item_id != '' and self.item_id is not None:
+            self.detail_object = Product.objects.get(id=self.item_id)
+
+        return render(
+            request,
+            'shop/detail.html',
+            {
+                'detail_object': self.detail_object,
+                'cart_quantity': self.cart_quantity
+            })
 
 
 # about us page
-def about(request):
-    the_cart = Cart(request)
-    cart_quantity = the_cart.get_quantity()
+class AboutView(View):
 
-    return render(
-        request,
-        'shop/about.html',
-        {
-            'cart_quantity': cart_quantity
-        })
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.cart_quantity = None
+        self.the_cart = None
+
+    def get(self, request):
+        self.the_cart = Cart(request)
+        self.cart_quantity = self.the_cart.get_quantity()
+
+        return render(
+            request,
+            'shop/about.html',
+            {
+                'cart_quantity': self.cart_quantity
+            })
 
 
 # contact page
-def contact(request):
-    # processing the email form
-    if request.method == "POST":
-        name = request.POST.get('name', "")
-        email = request.POST.get('email', "")
-        message = request.POST.get('message', "")
+class ContactView(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.send_email = None
+        self.db_message = None
+        self.message = None
+        self.email = None
+        self.name = None
+
+    def get(self, request):
+        return render(
+            request,
+            'shop/contact.html',
+            {}
+        )
+
+    def post(self, request):
+        # processing the email form
+        self.name = request.POST.get('name', "")
+        self.email = request.POST.get('email', "")
+        self.message = request.POST.get('message', "")
 
         # form save
-        db_message = Message(name=name, email=email, message=message)
-        db_message.save()
+        self.db_message = Message(name=self.name, email=self.email, message=self.message)
+        self.db_message.save()
 
         # send form data as email
-        send_email = Email()
-        send_email.send(to_email=email, subject='Kontakt', body=message)
+        self.send_email = Email()
+        self.send_email.send(to_email=self.email, subject='Kontakt', body=self.message)
 
         # success message
         messages.success(request, "Váš email byl odeslán!")
 
-    return render(
-        request,
-        'shop/contact.html',
-        {})
+        return render(
+            request,
+            'shop/contact.html',
+            {}
+        )
 
 
 # cart page
-def cart(request):
-    my_cart = Cart(request)
+class CartView(View):
 
-    cart_products = my_cart.get_products()
-    cart_quantity = my_cart.get_quantity()
-    cart_total_price = my_cart.get_total_price()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.session_cart = None
+        self.cart_total_price = None
+        self.cart_quantity = None
+        self.cart_products = None
+        self.my_cart = None
 
-    session_cart = my_cart.get_session_cart()
+    def get(self, request):
+        self.my_cart = Cart(request)
+        self.cart_products = self.my_cart.get_products()
+        self.cart_quantity = self.my_cart.get_quantity()
+        self.cart_total_price = self.my_cart.get_total_price()
+        self.session_cart = self.my_cart.get_session_cart()
 
-    return render(request, 'shop/cart.html',
-                  {"session_cart": session_cart, "cart_products": cart_products, "cart_quantity": cart_quantity,
-                   "cart_total_price": cart_total_price})
+        return render(
+            request,
+            'shop/cart.html',
+            {
+                "session_cart": self.session_cart,
+                "cart_products": self.cart_products,
+                "cart_quantity": self.cart_quantity,
+                "cart_total_price": self.cart_total_price
+            }
+        )
+
+
+# delete all products prom the cart using AJAX
+class CartDeleteAjax(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.response = None
+        self.my_cart = None
+
+    def post(self, request):
+        # AJAX request
+        self.my_cart = Cart(request)
+        self.my_cart.delete(request)
+        self.response = JsonResponse({'qty': 0})
+        return self.response
 
 
 # add product into the cart or increment quantity of particular product in the cart - using AJAX
-def cart_add(request):
-    my_cart = Cart(request)
+class CartAddAjax(View):
 
-    # AJAX request
-    if (request.POST.get('action')) == 'post':
-        product_id = int(request.POST.get('product_id'))
-        product = get_object_or_404(Product, id=product_id)
-        item_qty = my_cart.add(product=product)
-        cart_quantity = my_cart.get_quantity()
-        item_price = product.price * item_qty
-        total_price = my_cart.get_total_price()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.cart_quantity = None
+        self.item_qty = None
+        self.product = None
+        self.product_id = None
+        self.my_cart = None
+
+    def post(self, request):
+        self.my_cart = Cart(request)
+
+        # AJAX request
+        self.product_id = int(request.POST.get('product_id'))
+        self.product = get_object_or_404(Product, id=self.product_id)
+        self.item_qty = self.my_cart.add(product=self.product)
+        self.cart_quantity = self.my_cart.get_quantity()
+        item_price = self.product.price * self.item_qty
+        total_price = self.my_cart.get_total_price()
 
         response = JsonResponse(
-            {'qty': item_qty, 'item_price': item_price, 'total_price': total_price, "cart_quantity": cart_quantity})
+            {'qty': self.item_qty, 'item_price': item_price, 'total_price': total_price,
+             "cart_quantity": self.cart_quantity})
         return response
 
 
 # decrement quantity of particular item in the cart using AJAX
-def cart_dec(request):
-    my_cart = Cart(request)
+class CartDecAjax(View):
 
-    # AJAX request
-    if (request.POST.get('action')) == 'post':
-        product_id = int(request.POST.get('product_id'))
-        product = get_object_or_404(Product, id=product_id)
-        item_qty = my_cart.dec(product=product)
-        cart_quantity = my_cart.get_quantity()
-        item_price = product.price * item_qty
-        total_price = my_cart.get_total_price()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.total_price = None
+        self.item_price = None
+        self.cart_quantity = None
+        self.item_qty = None
+        self.product = None
+        self.product_id = None
+        self.my_cart = None
+
+    def post(self, request):
+        self.my_cart = Cart(request)
+
+        # AJAX request
+        self.product_id = int(request.POST.get('product_id'))
+        self.product = get_object_or_404(Product, id=self.product_id)
+        self.item_qty = self.my_cart.dec(product=self.product)
+        self.cart_quantity = self.my_cart.get_quantity()
+        self.item_price = self.product.price * self.item_qty
+        self.total_price = self.my_cart.get_total_price()
 
         response = JsonResponse(
-            {'qty': item_qty, 'item_price': item_price, 'total_price': total_price, "cart_quantity": cart_quantity})
-        return response
-
-
-# delete all products prom the cart using AJAX
-def cart_delete(request):
-    my_cart = Cart(request)
-
-    # AJAX request
-    if (request.POST.get('action')) == 'post':
-        my_cart.delete(request)
-        response = JsonResponse({'qty': 0})
+            {'qty': self.item_qty, 'item_price': self.item_price, 'total_price': self.total_price,
+             "cart_quantity": self.cart_quantity})
         return response
 
 
 # delete particular product from the cart
-def cart_remove_item(request):
-    if request.method == "POST":
-        my_id = request.POST.get('remove-item-id', "")
+class CartRemoveItemView(View):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.my_cart = None
+        self.my_id = None
+
+    def post(self, request):
+        self.my_id = request.POST.get('remove-item-id', "")
 
         # delete particular item from cart
-        my_cart = Cart(request)
-        my_cart.remove_cart_item(request, my_id)
+        self.my_cart = Cart(request)
+        self.my_cart.remove_cart_item(request, self.my_id)
 
-    response = redirect('cart')
-    return response
+        response = redirect('cart')
+        return response
 
 
 # shop checkout
-def checkout(request):
-    the_user_logged_in = "logged_out"
+class CheckoutView(View):
 
-    the_cart = Cart(request)
-    the_checkout = Checkout(request)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.send_email = None
+        self.checkout_email_message = None
+        self.message = None
+        self.db_message = None
+        self.total_order_price = None
+        self.the_session_cart = None
+        self.the_user_id = None
+        self.the_user = None
+        self.the_checkout = None
+        self.the_cart = None
+        self.the_user_logged_in = None
 
-    # check if user is logged-in (only logged-in user can make new order)
-    if request.user.is_authenticated:
-        the_user_logged_in = "logged_in"
-        the_user = request.user
-        the_user_id = the_user.id
+    def post(self, request):
+        self.the_user_logged_in = "logged_out"
+        self.the_cart = Cart(request)
+        self.the_checkout = Checkout(request)
 
-        the_session_cart = the_checkout.get_session_cart()
-        the_checkout.set_order()
+        # check if user is logged-in (only logged-in user can make new order)
+        if request.user.is_authenticated:
+            self.the_user_logged_in = "logged_in"
+            self.the_user = request.user
+            self.the_user_id = self.the_user.id
 
-        total_order_price = the_cart.get_total_price()
+            self.the_session_cart = self.the_checkout.get_session_cart()
+            self.the_checkout.set_order()
 
-        # set up the email message - conformation of order
-        message = "Dobrý den,\nděkujeme za Vaši objednávku.\n\n"
-        checkout_email_message = the_checkout.get_order_email_confirmation_message()
-        for key, value in checkout_email_message.items():
-            for key, value in value.items():
-                if key == 'product_title':
-                    message += "Název produktu: " + str(value) + "\n"
+            self.total_order_price = self.the_cart.get_total_price()
 
-                elif key == 'product_price':
-                    message += "Cena/ks: " + str(value) + " Kč\n"
+            # set up the email message - conformation of order
+            self.message = "Dobrý den,\nděkujeme za Vaši objednávku.\n\n"
+            self.checkout_email_message = self.the_checkout.get_order_email_confirmation_message()
 
-                elif key == 'product_quantity':
-                    message += "Počet ks: " + str(value) + "\n"
+            for key, value in self.checkout_email_message.items():
+                for key, value in value.items():
+                    if key == 'product_title':
+                        self.message += "Název produktu: " + str(value) + "\n"
 
-                elif key == 'product_item_price':
-                    message += "Položková cena: " + str(value) + " Kč\n"
+                    elif key == 'product_price':
+                        self.message += "Cena/ks: " + str(value) + " Kč\n"
 
-                else:
-                    pass
+                    elif key == 'product_quantity':
+                        self.message += "Počet ks: " + str(value) + "\n"
 
-            message += "\n\n"
-        message += "CELKOVÁ CENA OBJEDNÁVKY: " + str(total_order_price) + " Kč"
+                    elif key == 'product_item_price':
+                        self.message += "Položková cena: " + str(value) + " Kč\n"
 
-        # empty the cart after successfully made new order
-        the_checkout.delete_cart(request)
+                    else:
+                        pass
 
-        # email save
-        db_message = Message(name=the_user, email=the_user.email, message=message)
-        db_message.save()
+                self.message += "\n\n"
+            self.message += "CELKOVÁ CENA OBJEDNÁVKY: " + str(self.total_order_price) + " Kč"
 
-        # send email
-        send_email = Email()
-        send_email.send(to_email=the_user.email, subject='Objednávka přijata ke zpracování', body=message)
+            # empty the cart after successfully made new order
+            self.the_checkout.delete_cart(request)
 
-    else:
-        # if user is NOT logged-in -> login
-        return redirect('login')
+            # email save
+            self.db_message = Message(name=self.the_user, email=self.the_user.email, message=self.message)
+            self.db_message.save()
 
-    return render(
-        request,
-        'shop/checkout.html',
-        {
+            # send email
+            self.send_email = Email()
+            self.send_email.send(to_email=self.the_user.email, subject='Objednávka přijata ke zpracování',
+                                 body=self.message)
 
-        })
+        else:
+            # if user is NOT logged-in -> login
+            return redirect('login')
+
+        return render(
+            request,
+            'shop/checkout.html',
+            {
+
+            }
+        )
