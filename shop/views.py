@@ -73,6 +73,7 @@ class IndexView(View):
 
     # get
     def get(self, request):
+
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -109,6 +110,7 @@ class ProductsView(View):
 
     # get
     def get(self, request):
+
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -144,6 +146,7 @@ class DetailView(View):
 
     # get
     def get(self, request, id):
+
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -175,6 +178,7 @@ class AboutView(View):
 
     # get
     def get(self, request):
+
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -202,6 +206,7 @@ class ContactView(View):
 
     # get
     def get(self, request):
+
         # return
         return render(
             request,
@@ -211,6 +216,7 @@ class ContactView(View):
 
     # post
     def post(self, request):
+
         # the email form processing
         self.name = request.POST.get('name', "")
         self.email = request.POST.get('email', "")
@@ -249,6 +255,7 @@ class CartView(View):
 
     # get
     def get(self, request):
+
         # get session cart
         self.session_cart = self.cart.get_session_cart()
 
@@ -286,6 +293,7 @@ class CartDeleteAjax(View):
 
     # get
     def post(self, request):
+
         # AJAX request processing
         self.cart = Cart(request)
         self.cart.delete(request)
@@ -301,23 +309,24 @@ class CartAddAjax(View):
     # init
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.cart = None
         self.cart_quantity = None
         self.item_qty = None
         self.product = None
         self.product_id = None
-        self.my_cart = None
 
     # post
     def post(self, request):
-        self.my_cart = Cart(request)
+
+        self.cart = Cart(request)
 
         # AJAX request processing
         self.product_id = int(request.POST.get('product_id'))
         self.product = get_object_or_404(Product, id=self.product_id)
-        self.item_qty = self.my_cart.add(product=self.product)
-        self.cart_quantity = self.my_cart.get_quantity()
+        self.item_qty = self.cart.add(product=self.product)
+        self.cart_quantity = self.cart.get_quantity()
         item_price = self.product.price * self.item_qty
-        total_price = self.my_cart.get_total_price()
+        total_price = self.cart.get_total_price()
 
         # response
         response = JsonResponse(
@@ -347,10 +356,10 @@ class CartDecAjax(View):
         # AJAX request processing
         self.product_id = int(request.POST.get('product_id'))
         self.product = get_object_or_404(Product, id=self.product_id)
-        self.item_qty = self.my_cart.dec(product=self.product)
-        self.cart_quantity = self.my_cart.get_quantity()
+        self.item_qty = self.cart.dec(product=self.product)
+        self.cart_quantity = self.cart.get_quantity()
         self.item_price = self.product.price * self.item_qty
-        self.total_price = self.my_cart.get_total_price()
+        self.total_price = self.cart.get_total_price()
 
         # response
         response = JsonResponse(
@@ -370,6 +379,7 @@ class CartRemoveItemView(View):
 
     # post
     def post(self, request):
+
         # get product id to delete
         self.my_id = request.POST.get('remove-item-id', "")
 
@@ -402,6 +412,7 @@ class CheckoutView(View):
 
     # post
     def post(self, request):
+
         self.user_logged_in = "logged_out"
         self.cart = Cart(request)
         self.checkout = Checkout(request)
