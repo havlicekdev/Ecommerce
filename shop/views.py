@@ -33,6 +33,10 @@ class SearchView(View):
         self.found_objects = None
         self.cart_quantity = None
 
+    # get
+    def get(self, request):
+        return redirect('index')
+
     # form processing
     def post(self, request):
 
@@ -73,7 +77,6 @@ class IndexView(View):
 
     # get
     def get(self, request):
-
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -110,7 +113,6 @@ class ProductsView(View):
 
     # get
     def get(self, request):
-
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -146,7 +148,6 @@ class DetailView(View):
 
     # get
     def get(self, request, id):
-
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -178,7 +179,6 @@ class AboutView(View):
 
     # get
     def get(self, request):
-
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
@@ -206,7 +206,6 @@ class ContactView(View):
 
     # get
     def get(self, request):
-
         # return
         return render(
             request,
@@ -216,7 +215,6 @@ class ContactView(View):
 
     # post
     def post(self, request):
-
         # the email form processing
         self.name = request.POST.get('name', "")
         self.email = request.POST.get('email', "")
@@ -255,13 +253,12 @@ class CartView(View):
 
     # get
     def get(self, request):
-
-        # get session cart
-        self.session_cart = self.cart.get_session_cart()
-
         # cart quantity for the cart badge
         self.cart = Cart(request)
         self.cart_quantity = self.cart.get_quantity()
+
+        # get session cart
+        self.session_cart = self.cart.get_session_cart()
 
         # get all products in the cart
         self.cart_products = self.cart.get_products()
@@ -293,7 +290,6 @@ class CartDeleteAjax(View):
 
     # get
     def post(self, request):
-
         # AJAX request processing
         self.cart = Cart(request)
         self.cart.delete(request)
@@ -317,7 +313,6 @@ class CartAddAjax(View):
 
     # post
     def post(self, request):
-
         self.cart = Cart(request)
 
         # AJAX request processing
@@ -379,7 +374,6 @@ class CartRemoveItemView(View):
 
     # post
     def post(self, request):
-
         # get product id to delete
         self.my_id = request.POST.get('remove-item-id', "")
 
@@ -409,6 +403,10 @@ class CheckoutView(View):
         self.user_logged_in = None
         self.checkout = None
         self.cart = None
+
+    # get
+    def get(self, request):
+        return redirect('index')
 
     # post
     def post(self, request):
@@ -456,12 +454,12 @@ class CheckoutView(View):
             self.checkout.delete_cart(request)
 
             # email save
-            self.db_message = Message(name=self.the_user, email=self.the_user.email, message=self.message)
+            self.db_message = Message(name=self.user, email=self.user.email, message=self.message)
             self.db_message.save()
 
             # send email
             self.send_email = Email()
-            self.send_email.send(to_email=self.the_user.email, subject='Objednávka přijata ke zpracování',
+            self.send_email.send(to_email=self.user.email, subject='Objednávka přijata ke zpracování',
                                  body=self.message)
 
         else:

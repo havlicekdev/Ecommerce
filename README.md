@@ -69,6 +69,15 @@
 - každá změna množství v košíku má ihned vliv na položkovou cenu zboží, celkovou cenu nákupu a množství položek v košíku
 - tyto změny jsou ihned ukládány do objektu Cart na straně serveru, případně také session 
 
+# Refactoring
+- v aplikaci /shop proveden refactoring def views na class based views
+- v aplikaci /shop doplněny unit testy pro urls.py
+- zprovozněna funkce 404 Nenalezeno, včetně šablony
+- doplněn soubor závislostí - requirements.txt
+- doplněn soubor .dockerignore
+- doplněn Dockerfile
+- CI/CD pipeline konfigurace do gitlab-ci.yml je předpokládám odladěna ze strany DevOps
+
 # Možnosti rozšíření
 - RestAPI - kompletní RestAPI pro využití frontendu (React, Angular, Vue) a mobilních aplikací
 - zabezpečení RestAPI prostřednictvím JWT

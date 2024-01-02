@@ -58,7 +58,7 @@
                                         <form method="POST" action="{% url 'cart_remove_item' %}">
                                             {% csrf_token %}
                                             <input type="hidden" id="remove-item-id" name="remove-item-id" value="{{ key }}">
-                                            <button class="btn btn-warning">Odebrat</button>
+                                            <button class="btn btn-warning" type="submit">Odebrat</button>
                                         </form>
                                     </div>
                                 {% endif %}
